@@ -1,3 +1,4 @@
 noteschaos.md
 *.swp
 *.tmp
+.DS_Store
