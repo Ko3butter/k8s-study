@@ -95,3 +95,42 @@ spec:
       targetPort: 8080 // port do którego ma wysyłać dane (forwardować request) aka. port na którym nasłuchuje docelowy Pod
 ```
 - *Porty zawsze muszą zostać uwzględnione i w plikach konfiguracyjnych Serviceów i w plikach konfiguracyjnych Podów*
+
+Wynik komendy: `k describe service nginx-service`, uzywając pliku konfiguracyjnego z [nginx-service.yaml](nginx-service.yaml)<br>
+```
+Name:                     nginx-service
+Namespace:                default
+Labels:                   <none>
+Annotations:              <none>
+Selector:                 app=nginx
+Type:                     ClusterIP
+IP Family Policy:         SingleStack
+IP Families:              IPv4
+IP:                       10.43.24.131
+IPs:                      10.43.24.131
+Port:                     <unset>  80/TCP
+TargetPort:               8080/TCP
+Endpoints:                10.42.0.12:8080,10.42.0.13:8080
+Session Affinity:         None
+Internal Traffic Policy:  Cluster
+Events:                   <none>
+```
+Aby zweryfikować adresy IP zeby upewnić się ze nalezą do poprawnych Podów nalezy sprawdzić komendą:<br>
+`k get pod -o wide` - "o" jest skrótem "output", "wide" uzywamy aby dostać więcej informacji.<br>
+Wynik komendy:
+```
+NAME                                READY   STATUS    RESTARTS   AGE     IP           NODE                        NOMINATED NODE   READINESS GATES
+nginx-deployment-7f65fcf556-46wqj   1/1     Running   0          4h16m   10.42.0.12   k3d-main-cluster-server-0   <none>           <none>
+nginx-deployment-7f65fcf556-w9bbx   1/1     Running   0          12m     10.42.0.13   k3d-main-cluster-server-0   <none>           <none>
+```
+- Jak widać adresy IP zgadzają się z Endpointami w Service.<br>
+
+`k get deployment nginx-deployment -o yaml > nginx-deployment-result.yaml` - komenda która spisuje zaupdateowany output deploymentu pliku konfiguracyjnego, i zapisuje go na nowy plik [nginx-deployment-result.yaml](nginx-deployment-result.yaml)
+<br>
+<br>
+Na pliku mozna zaobserować automatycznie dodane przez K8s zmiany od czasu zaimplementowania go, które są aktualizowane na bieząco przez K8s. Utworzenie takiego pliku jest bardzo uzyteczne w debugowaniu.
+- W przypadku kiedy chcemy skopiować Deployment który juz mamy uzywając np. zautomatyzowanego skryptu, nalezy usunąć większość wygenerowanego przez K8s rzeczy. Dopiero wtedy mozemy stworzyć następny Deployment z tego blueprintu konfiguracyjnego.<br>
+
+Aby usunąć Deployment lub Service nalezy uzyć komendy:<br>
+`k delete -f <nazwa-deploymentu>`<br>
+`k delete -f <nazwa-service>`
