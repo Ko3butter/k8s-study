@@ -1,6 +1,6 @@
 # Kubernetes Study Repo
 My personal repo mainly written in Polish for learning and studying Kubernetes while at the same time strengthening my git/github skills.<br>
-Główne źródło: [👆](https://www.youtube.com/watch?v=X48VuDVv0do)
+Główne źródło: [👆](https://www.youtube.com/watch?v=X48VuDVv0do)<br>Left at 1:26:45
 ## Architektura Klastra Kubernetesowego:
 ![Architektura](/images/kubernetes-cluster-architecture.svg)<br>
 
@@ -138,4 +138,66 @@ Aby usunąć Deployment lub Service nalezy uzyć komendy:<br>
 # Demo Project: MongoDB and MongoExpress
 Przegląd komponentów:
 - Stworzymy Poda MongoDB, aby rozmawiać z podem nalezy utworzyć Service.
-- Service będzie Internal Service
+- Service będzie Internal Service, czyli zaden zewnętrzny request jest dozwolony do Poda, tylko komponenty w tym samym Klastrze mogą z nim rozmawiać.
+- Stworzymy MongoExpress Deployment, będziemy potrzebać: DB Url (przez ConfigMap) MongoDB zeby MongoExpress się z nim komunikował; DB User, DB Pwd (przez Secret) MongoDB zeby MongoExpress mógł autoryzować.
+- Zeby przekazać tę informacje Deploymentowi MongoExpress uzyjemy deployment.yaml przez Env variables (zmienne środowiskowe)
+- Jak zrobimy setup będziemy potrzebować MongoExpress zeby był dostępny przez przeglądarke, do tego stworzymy External Service, co pozwoli zewnętrzne requesty aby mówiły do Poda.
+
+Url:
+- IP Address of Node
+- Port of external Service
+
+#### Browser request flow przez komponenty K8s
+- Request przychodzi z przeglądarki
+- Przechodzi do External Service MongoExpress który zforwarduje go do Poda MongoExpress
+- Pod połączy się z Internal Service MongoDB który zforwarduje go do Poda MongoDB
+- Pod MongoDB autoryzuje request uzywając Credentials w Secrecie (Secret zyje w K8s, nie w Repo)
+
+#### Tworzymy plik konfiguracyjny Deploymentu MongoDB
+- Wszystkie potrzebne informacje znajduje na stronie [DockerHub](https://hub.docker.com/_/mongo)
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-deployment
+  labels:
+    app: mongodb
+specs:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mongodb
+  template:
+    metadata:
+      labels:
+        app: mongodb
+  spec:
+    containers:
+    - name: mongodb
+      image: mongo
+      ports:
+      - containerPort: 27017
+        value:
+      - name: MONGODB_INITDB_ROOT_PASSWORD
+        value:
+```
+- Aby zachować bezpieczeństwo Bazy Danych tworzymy plik konfiguracyjny obiektu Secret:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mongodb-secret
+type: Opaque
+data:
+    mongo-root-username: bmF6d2E=
+    mongo-root-password: aGFzbG8=
+```
+- Hasła w Secrecie są szyfrowane w base64, dlatego aby zrobić bezpieczniejesze hasło i nazwe zrobimy podwójną enkrypcje uzywając komendy:<br>
+`echo -n 'nazwa' | base64`
+- Secret musi zostać utworzony przed Deploymentem
+- Tworzymy obiekt Secret, mozemy go sprawdzić komendą: `k get secret`<br>
+Wynik komendy:
+```
+NAME             TYPE     DATA   AGE
+mongodb-secret   Opaque   2      57s
+```
