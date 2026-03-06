@@ -64,7 +64,7 @@ W przykładowym pliku [nginx-deployment.yaml](nginx-deployment.yaml)
         ports:
         - containerPort: 80
 ```
-Ta część kodu dotyczy do jaki ma powstać w Node, blueprint Poda.
+Ta część kodu dotyczy jaki ma powstać Pod w Node, blueprint Poda.
 ### Łączenie komponentów (Labels, Selectors, Ports)
 #### Podpinanie Deploymentów do Podów
 - Metadata przechowuje Labels<br>
