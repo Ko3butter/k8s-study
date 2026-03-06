@@ -1,5 +1,6 @@
 # Kubernetes Study Repo
-My personal repo mainly written in Polish for learning and studying Kubernetes while at the same time strengthening my git/github skills.
+My personal repo mainly written in Polish for learning and studying Kubernetes while at the same time strengthening my git/github skills.<br>
+Główne źródło: [👆](https://www.youtube.com/watch?v=X48VuDVv0do)
 ## Architektura Klastra Kubernetesowego:
 ![Architektura](/images/kubernetes-cluster-architecture.svg)<br>
 
@@ -135,3 +136,6 @@ Aby usunąć Deployment lub Service nalezy uzyć komendy:<br>
 `k delete -f <nazwa-deploymentu>`<br>
 `k delete -f <nazwa-service>`
 # Demo Project: MongoDB and MongoExpress
+Przegląd komponentów:
+- Stworzymy Poda MongoDB, aby rozmawiać z podem nalezy utworzyć Service.
+- Service będzie Internal Service
