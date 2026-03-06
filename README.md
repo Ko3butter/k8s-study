@@ -1,4 +1,4 @@
-# k8s-study
+# Kubernetes Study Repo
 My personal repo mainly written in Polish for learning and studying Kubernetes while at the same time strengthening my git/github skills.
 ## Architektura Klastra Kubernetesowego:
 ![Architektura](/images/kubernetes-cluster-architecture.svg)<br>
@@ -134,3 +134,4 @@ Na pliku mozna zaobserować automatycznie dodane przez K8s zmiany od czasu zaimp
 Aby usunąć Deployment lub Service nalezy uzyć komendy:<br>
 `k delete -f <nazwa-deploymentu>`<br>
 `k delete -f <nazwa-service>`
+# Demo Project: MongoDB and MongoExpress
